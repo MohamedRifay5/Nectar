@@ -30,7 +30,7 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
         print('Error initializing video player: $error');
       });
 
-    // Add listener to update play/pause button state
+    
     _controller.addListener(() {
       if (_controller.value.isInitialized &&
           _controller.value.isPlaying != _isPlaying) {
@@ -68,7 +68,6 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
                 )
               : const Center(child: CircularProgressIndicator()),
         ),
-        // Positioned widget to place the button on top of the video content
         Positioned(
           bottom: 16,
           right: 16,
