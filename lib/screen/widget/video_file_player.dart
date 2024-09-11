@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
@@ -14,60 +13,69 @@ class VideoPlayerWidget extends StatefulWidget {
 
 class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
   late VideoPlayerController _controller;
-  late Future<void> _initializeVideoPlayerFuture;
+  bool _isPlaying = false;
 
   @override
   void initState() {
     super.initState();
     print('Initializing video player with file path: ${widget.filePath}');
-    _controller = VideoPlayerController.file(File(widget.filePath));
-    _initializeVideoPlayerFuture = _controller.initialize().then((_) {
-      print('Video player initialized successfully');
-      setState(() {});
-    }).catchError((error) {
-      print('Error initializing video player: $error');
+    _controller = VideoPlayerController.file(File(widget.filePath))
+      ..setLooping(true)
+      ..initialize().then((_) {
+        setState(() {
+          _isPlaying = _controller.value.isPlaying;
+        });
+        _controller.play();
+      }).catchError((error) {
+        print('Error initializing video player: $error');
+      });
+
+    // Add listener to update play/pause button state
+    _controller.addListener(() {
+      if (_controller.value.isInitialized &&
+          _controller.value.isPlaying != _isPlaying) {
+        setState(() {
+          _isPlaying = _controller.value.isPlaying;
+        });
+      }
     });
-    _controller.setLooping(true);
+  }
+
+  void _togglePlayPause() {
+    setState(() {
+      if (_controller.value.isPlaying) {
+        _controller.pause();
+        _isPlaying = false;
+      } else {
+        _controller.play();
+        _isPlaying = true;
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    final aspectRatio = _controller.value.aspectRatio;
+    final isPortrait = aspectRatio < 1;
+
     return Stack(
       children: [
         Center(
-          child: FutureBuilder<void>(
-            future: _initializeVideoPlayerFuture,
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.done) {
-                if (snapshot.hasError) {
-                  return Center(
-                      child: Text('Error loading video: ${snapshot.error}'));
-                }
-                return AspectRatio(
-                  aspectRatio: _controller.value.aspectRatio,
+          child: _controller.value.isInitialized
+              ? AspectRatio(
+                  aspectRatio: isPortrait ? 1 / aspectRatio : aspectRatio,
                   child: VideoPlayer(_controller),
-                );
-              } else {
-                return const Center(child: CircularProgressIndicator());
-              }
-            },
-          ),
+                )
+              : const Center(child: CircularProgressIndicator()),
         ),
+        // Positioned widget to place the button on top of the video content
         Positioned(
           bottom: 16,
           right: 16,
           child: FloatingActionButton(
-            onPressed: () {
-              setState(() {
-                if (_controller.value.isPlaying) {
-                  _controller.pause();
-                } else {
-                  _controller.play();
-                }
-              });
-            },
+            onPressed: _togglePlayPause,
             child: Icon(
-              _controller.value.isPlaying ? Icons.pause : Icons.play_arrow,
+              _isPlaying ? Icons.pause : Icons.play_arrow,
             ),
           ),
         ),

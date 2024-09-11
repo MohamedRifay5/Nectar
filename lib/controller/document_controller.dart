@@ -36,9 +36,9 @@ class DocumentController extends GetxController {
     return documents.length > index ? documents[index] : null;
   }
 
-  void _saveDocuments() {
+  Future<void> _saveDocuments() async {
     final jsonList = documents.map((doc) => Document.docToJson(doc)).toList();
-    _storage.write(_storageKey, jsonList);
+    await _storage.write(_storageKey, jsonList);
   }
 
   void _loadDocuments() {

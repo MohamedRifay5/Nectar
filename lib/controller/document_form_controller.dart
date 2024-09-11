@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_sound/flutter_sound.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:intl/intl.dart';
 import 'package:nectar/controller/document_controller.dart';
 import 'package:nectar/model/document.dart';
 import 'package:nectar/screen/widget/record_audio.dart';
@@ -17,6 +16,7 @@ class DocumentFormController extends GetxController {
   final expiryDateController = TextEditingController();
   RxString documentType = RxString('');
   Rx<XFile?> file = Rx<XFile?>(null);
+  Rx<XFile?> thumbnailUrl = Rx<XFile?>(null);
   final FilePicker _filepicker = FilePicker.platform;
   final ImagePicker _picker = ImagePicker();
 
@@ -47,6 +47,13 @@ class DocumentFormController extends GetxController {
     );
     if (pickedFile != null) {
       file.value = pickedFile.xFiles.first;
+    }
+  }
+
+  Future<void> pickThumbnail() async {
+    final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      thumbnailUrl.value = pickedFile;
     }
   }
 
@@ -96,10 +103,6 @@ class DocumentFormController extends GetxController {
     }
   }
 
-  void selectExpiryDate(DateTime date) {
-    expiryDateController.text = DateFormat('yyyy-MM-dd').format(date);
-  }
-
   void saveDocument() {
     if (formKey.currentState!.validate()) {
       formKey.currentState!.save();
@@ -107,8 +110,9 @@ class DocumentFormController extends GetxController {
         title: titleController.text,
         description: descriptionController.text,
         file: file.value,
-        expiryDate: DateFormat('yyyy-MM-dd').parse(expiryDateController.text),
+        expiryDate: expiryDateController.text,
         documentType: documentType.value,
+        thumbnailUrl: thumbnailUrl.value,
       );
       documentController.addDocument(document);
       Get.back();

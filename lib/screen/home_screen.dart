@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:nectar/controller/document_controller.dart';
@@ -55,12 +57,28 @@ class HomeScreen extends StatelessWidget {
                 );
               },
               child: ListTile(
-                leading: const Icon(Icons.insert_drive_file),
-                title: Text(doc.title),
-                subtitle: Text(doc.documentType ?? 'Unknown Type'),
-                trailing: Text(doc.expiryDate != null
-                    ? doc.expiryDate!.toLocal().toString()
-                    : 'No Expiry Date'),
+                title: doc.thumbnailUrl != null
+                    ? Image.file(
+                        width: Get.width * .5,
+                        height: Get.height * .3,
+                        File(doc.thumbnailUrl!.path),
+                      )
+                    : const Icon(Icons.insert_drive_file),
+                subtitle: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(doc.title),
+                        Text(doc.documentType ?? 'Unknown Type'),
+                      ],
+                    ),
+                    Text(doc.expiryDate != ''
+                        ? doc.expiryDate.toString()
+                        : 'No Expiry Date'),
+                  ],
+                ),
                 onTap: () {
                   Get.to(() => DetailsScreen(index: index));
                 },

@@ -4,8 +4,9 @@ class Document {
   final String title;
   final String description;
   final XFile? file;
-  final DateTime? expiryDate;
+  final String? expiryDate;
   final String? documentType;
+  final XFile? thumbnailUrl;
 
   Document({
     required this.title,
@@ -13,6 +14,7 @@ class Document {
     this.file,
     this.expiryDate,
     this.documentType,
+    this.thumbnailUrl,
   });
 
   static Map<String, dynamic> docToJson(Document doc) {
@@ -20,8 +22,9 @@ class Document {
       'title': doc.title,
       'description': doc.description,
       'file': doc.file?.path,
-      'expiryDate': doc.expiryDate?.toIso8601String(),
+      'expiryDate': doc.expiryDate,
       'documentType': doc.documentType,
+      'thumbnailUrl': doc.thumbnailUrl?.path
     };
   }
 
@@ -30,10 +33,10 @@ class Document {
       title: json['title'],
       description: json['description'],
       file: json['file'] != null ? XFile(json['file']) : null,
-      expiryDate: json['expiryDate'] != null
-          ? DateTime.parse(json['expiryDate'])
-          : null,
+      expiryDate: json['expiryDate'] == '' ? json['expiryDate'] : '',
       documentType: json['documentType'],
+      thumbnailUrl:
+          json['thumbnailUrl'] != null ? XFile(json['thumbnailUrl']) : null,
     );
   }
 }
