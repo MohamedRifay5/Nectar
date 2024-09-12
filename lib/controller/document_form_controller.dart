@@ -8,6 +8,7 @@ import 'package:nectar/controller/document_controller.dart';
 import 'package:nectar/model/document.dart';
 import 'package:nectar/screen/widget/record_audio.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:video_thumbnail/video_thumbnail.dart';
 
 class DocumentFormController extends GetxController {
   final formKey = GlobalKey<FormState>();
@@ -50,24 +51,19 @@ class DocumentFormController extends GetxController {
     }
   }
 
-  Future<void> pickThumbnail() async {
-    final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
-    if (pickedFile != null) {
-      thumbnailUrl.value = pickedFile;
-    }
-  }
-
   Future<void> captureImage() async {
     final capturedFile = await _picker.pickImage(source: ImageSource.camera);
     if (capturedFile != null) {
       file.value = capturedFile;
+      await _generateImageThumbnail(capturedFile);
     }
   }
 
   Future<void> captureVideo() async {
-    final capturedFile = await _picker.pickVideo(source: ImageSource.camera);
+    final capturedFile = await _picker.pickVideo(source: ImageSource.gallery);
     if (capturedFile != null) {
       file.value = capturedFile;
+      await _generateVideoThumbnail(capturedFile);
     }
   }
 
@@ -116,6 +112,21 @@ class DocumentFormController extends GetxController {
       );
       documentController.addDocument(document);
       Get.back();
+    }
+  }
+
+  Future<void> _generateImageThumbnail(XFile imageFile) async {
+    thumbnailUrl.value = imageFile;
+  }
+
+  Future<void> _generateVideoThumbnail(XFile videoFile) async {
+    final thumbnail = await VideoThumbnail.thumbnailFile(
+      video: videoFile.path,
+      imageFormat: ImageFormat.JPEG,
+      quality: 75,
+    );
+    if (thumbnail != null) {
+      thumbnailUrl.value = XFile(thumbnail);
     }
   }
 

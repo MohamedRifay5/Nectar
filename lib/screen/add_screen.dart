@@ -23,37 +23,6 @@ class AddScreen extends StatelessWidget {
           key: formController.formKey,
           child: Column(
             children: [
-              InkWell(
-                onTap: () => formController.pickThumbnail(),
-                child: Container(
-                  alignment: Alignment.topCenter,
-                  width: Get.width * 0.3,
-                  height: Get.width * 0.3,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(5.0),
-                    border: Border.all(
-                      color: Colors.grey,
-                    ),
-                  ),
-                  child: Obx(() {
-                    if (formController.thumbnailUrl.value == null) {
-                      return const Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.add_a_photo,
-                              size: 50.0,
-                            ),
-                            Text('Add Thumbnail'),
-                          ]);
-                    }
-                    return Image.file(
-                      fit: BoxFit.cover,
-                      File(formController.thumbnailUrl.value!.path),
-                    );
-                  }),
-                ),
-              ),
               TextFormField(
                 controller: formController.titleController,
                 validator: (value) {

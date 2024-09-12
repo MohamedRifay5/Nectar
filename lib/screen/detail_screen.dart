@@ -79,18 +79,20 @@ class DetailsScreen extends StatelessWidget {
           icon: const Icon(Icons.arrow_back),
         ),
       ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text("Description: ${document.description}"),
-          if (document.expiryDate != null)
-            Text('Expiry Date: ${document.expiryDate}'),
-          if (file != null)
-            Padding(
-              padding: const EdgeInsets.only(top: 16.0),
-              child: buildFileViewer(),
-            ),
-        ],
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text("Description: ${document.description}"),
+            if (document.expiryDate != null)
+              Text('Expiry Date: ${document.expiryDate}'),
+            if (file != null)
+              Padding(
+                padding: const EdgeInsets.only(top: 16.0),
+                child: buildFileViewer(),
+              ),
+          ],
+        ),
       ),
     );
   }

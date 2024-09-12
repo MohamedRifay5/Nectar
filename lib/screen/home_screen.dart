@@ -57,13 +57,8 @@ class HomeScreen extends StatelessWidget {
                 );
               },
               child: ListTile(
-                title: doc.thumbnailUrl != null
-                    ? Image.file(
-                        width: Get.width * .5,
-                        height: Get.height * .3,
-                        File(doc.thumbnailUrl!.path),
-                      )
-                    : const Icon(Icons.insert_drive_file),
+                title: docTypeIcon(
+                    doc.file?.path ?? '', doc.thumbnailUrl?.path ?? ''),
                 subtitle: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -94,5 +89,44 @@ class HomeScreen extends StatelessWidget {
         child: const Icon(Icons.add),
       ),
     );
+  }
+
+  Widget docTypeIcon(String file, String thumbnailUrl) {
+    final fileExtension = file.split('.').last.toLowerCase();
+    switch (fileExtension) {
+      case 'pdf':
+        return const Icon(
+          Icons.picture_as_pdf,
+          size: 50,
+        );
+      case 'doc':
+      case 'docx':
+        return const Icon(
+          Icons.file_copy,
+          size: 50,
+        );
+      case 'xlsx':
+        return const Icon(
+          Icons.file_copy,
+          size: 50,
+        );
+      case 'jpg':
+      case 'png':
+        return Image.file(File(file));
+      case 'mp4':
+        return Image.file(
+          File(thumbnailUrl),
+        );
+      case 'aac':
+        return const Icon(
+          Icons.audiotrack,
+          size: 50,
+        );
+      default:
+        return const Icon(
+          Icons.insert_drive_file,
+          size: 50,
+        );
+    }
   }
 }
